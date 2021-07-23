@@ -1,0 +1,9 @@
+apiVersion: v1
+name: techtrends
+description: TechTrends project for Cloud Native Course
+keywords:
+- techtrends
+version: 1.0.0
+maintainers:
+- name: davidebest
+  email: dave.e.best@gmail.com
