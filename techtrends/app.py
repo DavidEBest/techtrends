@@ -7,11 +7,16 @@ from werkzeug.exceptions import abort
 
 FORMAT = '%(levelname)s:%(name)s: %(asctime)-15s %(message)s'
 
+metrics_db = {
+    'connections': 0
+}
+
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
+    metrics_db['connections'] += 1
     return connection
 
 # Function to get a post using its ID
@@ -30,12 +35,7 @@ def get_post_count():
     return count
 
 def get_conn_count():
-    # based on: https://stackoverflow.com/a/23647374
-    proc = Popen(['lsof', 'database.db'], stdout=PIPE)
-    count = sum(1 for _ in proc.stdout)
-    if count > 0:
-        count-=1
-    return count
+    return metrics_db['connections']
 
 # Define the Flask application
 app = Flask(__name__)
