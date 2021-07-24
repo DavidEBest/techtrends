@@ -2,21 +2,19 @@ import sqlite3
 import logging, sys
 from subprocess import Popen, PIPE
 
-from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
+from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash, current_app
 from werkzeug.exceptions import abort
 
 FORMAT = '%(levelname)s:%(name)s: %(asctime)-15s %(message)s'
-
-metrics_db = {
-    'connections': 0
-}
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
-    metrics_db['connections'] += 1
+    if 'DB_CONN_COUNTER' not in current_app.config:
+        current_app.config['DB_CONN_COUNTER'] = 0
+    current_app.config['DB_CONN_COUNTER'] += 1
     return connection
 
 # Function to get a post using its ID
@@ -35,7 +33,7 @@ def get_post_count():
     return count
 
 def get_conn_count():
-    return metrics_db['connections']
+    return current_app.config['DB_CONN_COUNTER']
 
 # Define the Flask application
 app = Flask(__name__)
